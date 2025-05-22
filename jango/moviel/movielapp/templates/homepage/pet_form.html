@@ -1,0 +1,26 @@
+{% if pets %}
+    {% for pet in pets %}
+        <div class="pet-card">
+            <a href="{% url 'pet_detail' pet.id %}">
+                <div class="pet-image-container">
+                    <img src="{{ pet.image.url }}" alt="{{ pet.name }}">
+                </div>
+                
+                <div class="pet-info">
+                    <h3>{{ pet.name }}</h3>
+                    <p class="pet-category">{{ pet.category }}</p>
+                    <p class="pet-age">Age: {{ pet.age }} years</p>
+                    <p class="pet-breed">Breed: {{ pet.breed }}</p>
+                    <p class="pet-location">Location: {{ pet.location }}</p>
+                    <p class="pet-health-status">{{ pet.health_status }}</p>
+                    <p class="pet-price">Price: ₹{{ pet.price }}</p>
+                </div>
+            </a>
+        </div>
+        {% endfor %}
+        {% else %}
+            <div class="no-results">
+                <i class="fas fa-search" style="font-size: 2rem; margin-bottom: 1rem; display: block;"></i>
+                <p>No pets found matching your search. Try different keywords!</p>
+            </div>
+        {% endif %}

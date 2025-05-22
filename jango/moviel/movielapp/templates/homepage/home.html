@@ -1,0 +1,53 @@
+{% extends 'homepage/layout.html' %}
+{% load static %}
+{% block title %}Home Page{% endblock %}
+
+{% block content %}
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+<link rel="stylesheet" href="{% static 'css/home.css' %}?v=2" />
+<script src="{% static 'js/home.js' %}"></script>
+
+<div class="hero-section">
+    <div class="hero-content">
+        <h1>We Care <span class="highlight">Your Pets</span></h1>
+        <p class="subtitle">A dog is the only thing on earth that loves you more than he loves himself</p>
+        <a href="{% url 'register' %}" class="register-btn">Register Now</a>
+    </div>
+    <div class="hero-image">
+        <img src="{% static 'images/dog3.png' %}" alt="Happy Corgi" class="pet-image">
+    </div>
+</div>
+
+<div class="discover-pets-section">
+    <div class="section-header">
+        <h2>Discover Pets</h2>
+        <form action="{% url 'house' %}" method="GET" class="search-form">
+            <input type="text" name="query" class="search-input" placeholder="Search pets...">
+            <button type="submit" class="search-btn">
+                <i class="fas fa-search"></i>
+            </button>
+            <div class="search-loading hidden">
+                <i class="fas fa-spinner fa-spin"></i>
+            </div>
+        </form>
+        <a href="{% url 'pets' %}?query={{ query }}" class="view-all">View All</a>
+    </div>
+    <div class="pet-grid">
+        {% include 'homepage/pet_form.html' with pets=pets %}
+    </div>
+</div>
+
+<div class="about-us-section">
+    <div class="about-us-content">
+        <h2>About Us</h2>
+        <p>At Furry Fosters, we offer a comprehensive platform for potential adopters to find their perfect furry friend. We work closely with shelters, fosters, and volunteers to provide a seamless and joyful  process. Our team is passionate about animal welfare and committed to ensuring each pet receives the care, love, and attention they deserve.</p>
+        <p>Join us in making a difference—one paw at a time. Whether you are looking to adopt, volunteer, or support our mission, there is a place for you in the Furry Fosters family. Together, we can create a brighter future for pets everywhere.</p>
+       
+    </div>
+    <div class="about-us-image">
+        <img src="{% static 'images/cat.png' %}" alt="About Us" class="about-image">
+    </div>
+</div>
+
+
+{% endblock %}

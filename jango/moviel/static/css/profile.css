@@ -1,0 +1,151 @@
+/* Profile Container */
+.container {
+    margin-top: 120px;
+    animation: fadeIn 1.5s ease-in-out;
+}
+
+/* Card Styling */
+.card {
+    margin-top: 100px;
+    background: rgb(242, 236, 214);
+    border-radius: 10px;
+    padding: 20px;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05);
+    transition: transform 0.3s ease;
+    border: 1px solid rgba(233, 210, 129, 0.3);
+    margin-bottom: 20px;
+    animation: fadeInUp 1.5s ease-in-out;
+}
+
+.card:hover {
+    transform: translateY(-3px);
+}
+
+.card-title {
+    font-size: 2rem;
+    font-weight: 700;
+    color: #333;
+    margin-bottom: 20px;
+    animation: slideIn 1s ease-out;
+}
+
+/* User Info Styling */
+.user-info p {
+    font-size: 1.1rem;
+    margin-bottom: 1rem;
+    color: #666;
+    line-height: 1.6;
+}
+
+.user-info strong {
+    color: #333;
+    font-weight: 600;
+}
+
+/* Form Controls */
+.form-control {
+    width: 100%;
+    padding: 12px 20px;
+    border: 2px solid #e5e7eb;
+    border-radius: 50px;
+    font-size: 1rem;
+    outline: none;
+    transition: border-color 0.3s ease;
+    background: rgba(246, 227, 125, 0.3);
+    margin-bottom: 15px;
+}
+
+.form-control:focus {
+    border-color: rgb(236, 222, 172);
+}
+
+/* Button Styling */
+.btn {
+    display: inline-block;
+    padding: 12px 35px;
+    border-radius: 50px;
+    text-decoration: none;
+    font-weight: 600;
+    font-size: 1rem;
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+    border: none;
+    cursor: pointer;
+}
+
+.btn:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+}
+
+.btn-primary {
+    background-color: rgb(233, 210, 129);
+    color: #333;
+}
+
+.btn-primary:hover {
+    background-color: rgb(246, 227, 125);
+}
+
+.btn-warning {
+    background-color: #333;
+    color: white;
+}
+
+.btn-warning:hover {
+    background-color: #444;
+}
+
+/* Form Labels */
+label {
+    display: block;
+    margin-bottom: 8px;
+    color: #333;
+    font-weight: 600;
+    font-size: 1rem;
+}
+
+/* Error Messages */
+.errorlist {
+    color: #dc3545;
+    list-style: none;
+    padding: 0;
+    margin: 5px 0;
+    font-size: 0.9rem;
+}
+
+/* Success Messages */
+.alert {
+    padding: 15px;
+    border-radius: 10px;
+    margin-bottom: 20px;
+    animation: fadeIn 1s ease-in-out;
+}
+
+.alert-success {
+    background: rgba(233, 210, 129, 0.2);
+    border: 1px solid rgb(233, 210, 129);
+    color: #333;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+    .container {
+        margin-top: 100px;
+        padding: 0 15px;
+    }
+
+    .card-title {
+        font-size: 1.75rem;
+    }
+
+    .user-info p {
+        font-size: 1rem;
+    }
+
+    .btn {
+        width: 100%;
+        margin-bottom: 10px;
+    }
+}
+
+

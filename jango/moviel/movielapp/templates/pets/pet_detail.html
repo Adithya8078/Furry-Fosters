@@ -1,0 +1,312 @@
+{% extends 'homepage/layout.html' %}
+{% load static %}
+{% block title %}{{ pet.name }} Details{% endblock %}
+{% block content %}
+<link rel="stylesheet" href="{% static 'css/pet_detail.css' %}?v=2" />
+
+
+
+
+<div class="pet-detail">
+    {% include "messages/message.html" %}
+    <div class="pet-detail-container">
+        <div class="pet-image-section">
+            <img src="{{ pet.image.url }}" alt="{{ pet.name }}" class="pet-image">
+            
+            {% if user.is_authenticated and user.role != 'admin' and user.role != 'foster' %}
+    <button class="contact-btn" onclick="handleContact()">Contact Foster Home</button>
+    <button class="contact-btn message-btn" onclick="showMessageModal()">
+        <i class="fas fa-envelope"></i> Send Message
+    </button>
+    {% endif %}
+        </div>
+        
+        <div class="pet-info-section">
+            <h1>{{ pet.name }}</h1>
+            <div class="pet-about">
+                <h2>About {{ pet.name }}</h2>
+                <p>{{ pet.about|default:"No description available." }}</p>
+                <div class="info-grid">
+                    <div class="info-item">
+                        <span class="label">Breed</span>
+                        <span class="value">{{ pet.breed }}</span>
+                    </div>
+                    <div class="info-item">
+                        <span class="label">Age</span>
+                        <span class="value">{{ pet.age }} years</span>
+                    </div>
+                    <div class="info-item">
+                        <span class="label">Category</span>
+                        <span class="value">{{ pet.category }}</span>
+                    </div>
+                    <div class="info-item">
+                        <span class="label">Health Status</span>
+                        <span class="value status-badge">{{ pet.health_status }}</span>
+                    </div>
+                    <div class="info-item">
+                        <span class="label">Vaccination Status</span>
+                        <span class="value">
+                            {% if pet.vaccine_report %}
+                                Vaccinated 
+                                <a href="{{ pet.vaccine_report.url }}" target="_blank" class="report-link">
+                                    View Report
+                                </a>
+                            {% else %}
+                                Not Vaccinated
+                            {% endif %}
+                        </span>
+                    </div>
+                    <div class="info-item">
+                        <span class="label">Location</span>
+                        <span class="value">{{ pet.location }}</span>
+                    </div>
+                    <!-- New Section: Price -->
+                    <div class="info-item">
+                        <span class="label">Price</span>
+                        <span class="value">₹{{ pet.price }}</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+    </div>
+</div>
+
+<!-- Adopter Intent Form Modal -->
+<div id="adopter-form-modal" class="modal hidden">
+    <div class="modal-content">
+        <span class="close" onclick="closeModal()">&times;</span>
+        <h2>Adoption Intent Form</h2>
+        <form id="adopter-form" method="POST">
+            {% csrf_token %}
+            <div id="form-section">
+                {% for field in form %}
+                    <div class="form-group">
+                        {{ field.label_tag }}
+                        {{ field }}
+                    </div>
+                {% endfor %}
+                <button type="button" class="btn btn-primary" onclick="proceedToPayment()">Proceed to Payment</button>
+            </div>
+            <div id="payment-section" class="hidden text-center">
+                <h3>Scan QR Code to Pay</h3>
+                <p>Amount: ₹{{ pet.price }}</p>
+                <div id="qr-container">
+                    <img id="payment-qr" src="" alt="Payment QR Code" style="max-width: 300px; margin: 20px auto;">
+                </div>
+                <button type="button" class="btn btn-success mt-3" onclick="validatePayment()">Validate Payment</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<div id="message-modal" class="modal hidden">
+    <div class="modal-content">
+        <span class="close" onclick="closeMessageModal()">&times;</span>
+        <h2>Send Message about {{ pet.name }}</h2>
+        <form id="message-form" method="POST">
+            {% csrf_token %}
+            <div class="form-group">
+                <textarea name="content" class="form-control" placeholder="Write your message here..." rows="5" required></textarea>
+            </div>
+            <button type="button" class="btn btn-success" onclick="sendMessage()">Send Message</button>
+        </form>
+    </div>
+</div>
+
+<script>
+    function handleContact() {
+        const isLoggedIn = "{{ user.is_authenticated|yesno:'true,false' }}" === "true";
+
+        if (!isLoggedIn) {
+            alert("You need to log in to contact the foster home.");
+            window.location.href = "{% url 'login' %}";
+        } else {
+            document.getElementById('adopter-form-modal').style.display = 'block';
+        }
+    }
+
+    function closeModal() {
+        document.getElementById('adopter-form-modal').style.display = 'none';
+    }
+    function submitAdoptionForm() {
+        const petId = "{{ pet.id }}";
+        const csrfToken = '{{ csrf_token }}';
+
+        const formData = new FormData();
+        formData.append('intent', document.querySelector('#adopter-form [name="intent"]').value);
+        formData.append('experience', document.querySelector('#adopter-form [name="experience"]').value);
+        formData.append('home_environment', document.querySelector('#adopter-form [name="home_environment"]').value);
+
+        fetch("{% url 'create_contact_request' pet.id %}", {
+            method: 'POST',
+            headers: {
+                'X-CSRFToken': csrfToken,
+            },
+            body: formData,
+        })
+        .then(response => response.json())
+        .then(data => {
+            alert(data.message);
+            if (data.success) {
+                closeModal();
+            }
+        })
+        .catch(error => {
+            console.error("Error occurred:", error);
+            alert('An error occurred: ' + error.message);
+        });
+    }
+
+   
+    function showMessageModal() {
+        const isLoggedIn = "{{ user.is_authenticated|yesno:'true,false' }}" === "true";
+        
+        if (!isLoggedIn) {
+            alert("You need to log in to send messages.");
+            window.location.href = "{% url 'login' %}";
+            return;
+        }
+        
+        document.getElementById('message-modal').style.display = 'block';
+    }
+
+    function closeMessageModal() {
+        document.getElementById('message-modal').style.display = 'none';
+    }
+
+    function sendMessage() {
+    const form = document.getElementById('message-form');
+    const content = form.querySelector('textarea[name="content"]').value;
+    const petId = "{{ pet.id }}";
+    const recipientId = "{{ pet.foster_home.id }}";
+
+    fetch(`/send-message/${petId}/`, {
+        method: 'POST',
+        headers: {
+            'X-CSRFToken': '{{ csrf_token }}',
+            'Content-Type': 'application/x-www-form-urlencoded',
+        },
+        body: `content=${encodeURIComponent(content)}&recipient_id=${recipientId}`
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            closeMessageModal();
+            form.reset();
+            // Open chat after sending
+            toggleExpand();
+            openChat('{{ pet.foster_home.username }}', '{{ pet.foster_home.username|first }}', petId, recipientId);
+        } else {
+            alert(data.message || 'Error sending message');
+        }
+    })
+    .catch(error => {
+        console.error('Error:', error);
+        alert('Error sending message');
+    });
+}
+let currentPaymentId = null;
+
+function proceedToPayment() {
+    const form = document.getElementById('adopter-form');
+    const formData = new FormData(form);
+    formData.append('pet_id', "{{ pet.id }}");
+    
+    // Show loading state
+    const paymentSection = document.getElementById('payment-section');
+    paymentSection.innerHTML = '<p>Generating QR code...</p>';
+    paymentSection.classList.remove('hidden');
+    document.getElementById('form-section').classList.add('hidden');
+    
+    fetch('/generate-payment-qr/', {
+        method: 'POST',
+        headers: {
+            'X-CSRFToken': '{{ csrf_token }}',
+        },
+        body: formData
+    })
+    .then(response => {
+        if (!response.ok) {
+            throw new Error('Network response was not ok');
+        }
+        return response.json();
+    })
+    .then(data => {
+        if (data.success) {
+            currentPaymentId = data.payment_id;
+            
+            // Update payment section with QR code
+            paymentSection.innerHTML = `
+                <h3>Scan QR Code to Pay</h3>
+                <p>Amount: ₹${data.amount}</p>
+                <div id="qr-container">
+                    <img id="payment-qr" src="${data.qr_code}" alt="Payment QR Code" style="max-width: 300px; margin: 20px auto;">
+                </div>
+                <button type="button" class="btn btn-success mt-3" onclick="validatePayment()">Validate Payment</button>
+            `;
+        } else {
+            throw new Error(data.message || 'Failed to generate QR code');
+        }
+    })
+    .catch(error => {
+        console.error('Error:', error);
+        paymentSection.innerHTML = `
+            <p class="text-danger">Error: ${error.message}</p>
+            <button type="button" class="btn btn-primary" onclick="proceedToPayment()">Try Again</button>
+        `;
+    });
+}
+
+function validatePayment() {
+    if (!currentPaymentId) {
+        alert('Payment ID not found. Please try again.');
+        return;
+    }
+
+    const formData = new FormData();
+    formData.append('pet_id', "{{ pet.id }}");
+    
+    fetch(`/validate-payment/${currentPaymentId}/`, {
+        method: 'POST',
+        headers: {
+            'X-CSRFToken': '{{ csrf_token }}',
+        },
+        body: formData
+    })
+    .then(response => {
+        if (!response.ok) {
+            throw new Error('Network response was not ok');
+        }
+        return response.json();
+    })
+    .then(data => {
+        if (data.success) {
+            alert('Payment successful and request created!');
+            closeModal();
+            location.reload();
+        } else {
+            throw new Error(data.message || 'Payment validation failed');
+        }
+    })
+    .catch(error => {
+        console.error('Error:', error);
+        alert(error.message || 'Error validating payment. Please try again.');
+    });
+}
+
+function closeModal() {
+    const modal = document.getElementById('adopter-form-modal');
+    const form = document.getElementById('adopter-form');
+    const formSection = document.getElementById('form-section');
+    const paymentSection = document.getElementById('payment-section');
+    
+    // Reset everything
+    modal.style.display = 'none';
+    form.reset();
+    formSection.classList.remove('hidden');
+    paymentSection.classList.add('hidden');
+    currentPaymentId = null;
+}
+</script>
+{% endblock %}

@@ -1,0 +1,150 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Register</title>
+    <link rel="stylesheet" href="{% static 'css/register.css' %}">
+    <style>
+        /* Hide scrollbar for Chrome, Safari and Opera */
+        .form-section::-webkit-scrollbar {
+            display: none;
+        }
+
+        /* Hide scrollbar for IE, Edge and Firefox */
+        .form-section {
+            -ms-overflow-style: none;  /* IE and Edge */
+            scrollbar-width: none;  /* Firefox */
+        }
+
+        body {
+            margin: 0;
+            padding: 0;
+            overflow: hidden;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="form-section">
+            <div class="tabs">
+                <a href="{% url 'login' %}" class="tab">Login</a>
+                <a href="{% url 'register' %}" class="tab active">Sign Up</a>
+            </div>
+            <form method="POST">
+                {% csrf_token %}
+                <div class="form-group">
+                    {{ form.full_name.label_tag }}
+                    {{ form.full_name }}
+                    {% if form.full_name.errors %}
+                        <div class="error">
+                            {% for error in form.full_name.errors %}
+                                <p>{{ error }}</p>
+                            {% endfor %}
+                        </div>
+                    {% endif %}
+                </div>
+                <div class="form-group {% if form.username.errors %}has-error{% endif %}">
+                    {{ form.username.label_tag }}
+                    {{ form.username }}
+                    {% if form.username.errors %}
+                        <div class="error">
+                            {% for error in form.username.errors %}
+                                <p>{{ error }}</p>
+                            {% endfor %}
+                        </div>
+                    {% endif %}
+                </div>
+                <div class="form-group {% if form.email.errors %}has-error{% endif %}">
+                    {{ form.email.label_tag }}
+                    {{ form.email }}
+                    {% if form.email.errors %}
+                        <div class="error">
+                            {% for error in form.email.errors %}
+                                <p>{{ error }}</p>
+                            {% endfor %}
+                        </div>
+                    {% endif %}
+                </div>
+                <div class="form-group {% if form.phone_number.errors %}has-error{% endif %}">
+                    {{ form.phone_number.label_tag }}
+                    {{ form.phone_number }}
+                    {% if form.phone_number.errors %}
+                        <div class="error">
+                            {% for error in form.phone_number.errors %}
+                                <p>{{ error }}</p>
+                            {% endfor %}
+                        </div>
+                    {% endif %}
+                </div>
+                <div class="form-group {% if form.password1.errors %}has-error{% endif %}">
+                    {{ form.password1.label_tag }}
+                    {{ form.password1 }}
+                    {% if form.password1.errors %}
+                        <div class="error">
+                            {% for error in form.password1.errors %}
+                                <p>{{ error }}</p>
+                            {% endfor %}
+                        </div>
+                    {% endif %}
+                </div>
+                <div class="form-group {% if form.password2.errors %}has-error{% endif %}">
+                    {{ form.password2.label_tag }}
+                    {{ form.password2 }}
+                    {% if form.password2.errors %}
+                        <div class="error">
+                            {% for error in form.password2.errors %}
+                                <p>{{ error }}</p>
+                            {% endfor %}
+                        </div>
+                    {% endif %}
+                </div>
+                <div class="form-group">
+                    {{ form.role.label_tag }}
+                    {{ form.role }}
+                </div>
+                <div class="form-group" id="licenseNumberGroup" style="display: none;">
+                    <label for="id_license_number">License Number</label>
+                    <input type="text" name="license_number" id="id_license_number">
+                </div>
+                <button type="submit">Register</button>
+            </form>
+            <p class="footer-text">Already have an account? <a href="{% url 'login' %}">Login here</a></p>
+        </div>
+        <div class="image-section">
+            <!-- You can add an image here -->
+        </div>
+    </div>
+    <script>
+        document.addEventListener("DOMContentLoaded", function() {
+            const roleSelect = document.querySelector("#id_role");
+            const licenseGroup = document.querySelector("#licenseNumberGroup");
+            const fullNameLabel = document.querySelector("label[for='id_full_name']");
+            
+            // Show/hide license number and update full name label based on initial role value
+            if (roleSelect.value === "foster") {
+                fullNameLabel.textContent = "Foster Home Name";
+                licenseGroup.style.display = "block";
+            }
+   
+            roleSelect.addEventListener("change", function() {
+                if (roleSelect.value === "foster") {
+                    fullNameLabel.textContent = "Foster Home Name"; // Update label text for full name
+                    licenseGroup.style.display = "block"; // Show license number input
+                } else {
+                    fullNameLabel.textContent = "Full Name"; // Reset label text
+                    licenseGroup.style.display = "none"; // Hide license number input
+                }
+            });
+        });
+        document.addEventListener("DOMContentLoaded", function () {
+            const phoneInput = document.querySelector("input[name='phone_number']");
+            phoneInput.addEventListener("input", function (e) {
+                // Allow only digits in the input field
+                this.value = this.value.replace(/\D/g, '');
+            });
+        });
+    </script>
+</body>
+</html>

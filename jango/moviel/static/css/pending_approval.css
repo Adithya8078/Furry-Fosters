@@ -1,0 +1,128 @@
+body {
+    min-height: 100vh;
+    margin: 0;
+    font-family: 'Segoe UI', system-ui, sans-serif;
+    background: linear-gradient(135deg, rgb(233, 210, 129, 0.2), #fff);
+    display: grid;
+    place-items: center;
+    padding: 20px;
+}
+
+.container {
+    background: white;
+    border-radius: 15px;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.08);
+    width: 100%;
+    max-width: 900px;
+    min-height: 500px;
+    display: flex;
+    overflow: hidden;
+}
+
+.approval-section {
+    flex: 1;
+    padding: 2.5rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.approval-content {
+    text-align: center;
+    max-width: 400px;
+}
+
+.approval-icon {
+    width: 80px;
+    height: 80px;
+    margin: 0 auto 2rem;
+    color: rgb(233, 210, 129);
+    animation: pulse 2s infinite;
+}
+
+@keyframes pulse {
+    0% {
+        transform: scale(1);
+    }
+    50% {
+        transform: scale(1.05);
+    }
+    100% {
+        transform: scale(1);
+    }
+}
+
+.clock-icon {
+    width: 100%;
+    height: 100%;
+}
+
+h1 {
+    color: #2d2d2d;
+    font-size: 2rem;
+    margin-bottom: 1rem;
+}
+
+p {
+    color: #666;
+    font-size: 1.1rem;
+    line-height: 1.6;
+    margin-bottom: 2rem;
+}
+
+.back-button {
+    display: inline-block;
+    padding: 0.9rem 2rem;
+    background: rgb(233, 210, 129);
+    color: #2d2d2d;
+    font-weight: 600;
+    text-decoration: none;
+    border-radius: 8px;
+    transition: transform 0.2s;
+}
+
+.back-button:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(233, 210, 129, 0.3);
+}
+
+.image-section {
+    flex: 1;
+    background: #e9d28133;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 2rem;
+}
+
+.image-section img {
+    max-width: 80%;
+    height: auto;
+}
+
+@media (max-width: 768px) {
+    .container {
+        flex-direction: column;
+        margin: 1rem;
+    }
+    
+    .image-section {
+        display: none;
+    }
+    
+    .approval-section {
+        padding: 2rem;
+    }
+    
+    .approval-content {
+        padding: 1rem;
+    }
+    
+    h1 {
+        font-size: 1.75rem;
+    }
+    
+    p {
+        font-size: 1rem;
+    }
+}

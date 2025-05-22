@@ -1,0 +1,56 @@
+<div id="chat-container">
+    <div id="messages">
+        <!-- Messages will be dynamically loaded here -->
+    </div>
+    <form id="message-form">
+        <input type="hidden" id="recipient-id" value="{{ recipient.id }}">
+        <textarea id="message-content" placeholder="Type your message"></textarea>
+        <button type="submit">Send</button>
+    </form>
+</div>
+
+<script>
+    const petId = "{{ pet.id }}";
+    const fetchMessages = () => {
+        fetch(`/fetch-messages/${petId}/`)
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    const messagesDiv = document.getElementById('messages');
+                    messagesDiv.innerHTML = '';
+                    data.messages.forEach(msg => {
+                        const msgEl = document.createElement('div');
+                        msgEl.innerHTML = `<strong>${msg.sender_name}:</strong> ${msg.content} <small>${msg.created_at}</small>`;
+                        messagesDiv.appendChild(msgEl);
+                    });
+                }
+            });
+    };
+
+    const sendMessage = (event) => {
+        event.preventDefault();
+        const content = document.getElementById('message-content').value;
+        const recipientId = document.getElementById('recipient-id').value;
+
+        fetch(`/send-message/${petId}/`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRFToken': '{{ csrf_token }}',
+            },
+            body: JSON.stringify({ content, recipient_id: recipientId }),
+        })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    fetchMessages();  // Refresh the chat
+                    document.getElementById('message-content').value = '';
+                } else {
+                    alert(data.message);
+                }
+            });
+    };
+
+    document.getElementById('message-form').addEventListener('submit', sendMessage);
+    fetchMessages();
+</script>

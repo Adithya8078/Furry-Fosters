@@ -1,0 +1,55 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login</title>
+    <link rel="stylesheet" href="{% static 'css/login.css' %}?v=4">
+</head>
+<body>
+    <div class="container">
+        <div class="form-section">
+            <div class="tabs">
+                <a href="{% url 'login' %}" class="tab active">Login</a>
+                <a href="{% url 'register' %}" class="tab">Sign Up</a>
+            </div>
+            <form method="POST">
+                {% csrf_token %}
+                <div class="form-group">
+                    {{ form.username.label_tag }}
+                    {{ form.username }}
+                </div>
+                <div class="form-group">
+                    {{ form.password.label_tag }}
+                    {{ form.password }}
+                    {% if form.non_field_errors or messages %}
+                        <div class="error-message">
+                            {% if messages %}
+                                {% for message in messages %}
+                                    {{ message }}
+                                {% endfor %}
+                            {% else %}
+                                Invalid username or password
+                            {% endif %}
+                        </div>
+                    {% endif %}
+                </div>
+                <div class="form-group">
+                    <a href="{% url 'custom_password_reset' %}">Forgot password?</a>
+
+                </div>
+                <button type="submit">Login</button>
+            </form>
+            <div class="forgot">
+                
+            </div>
+            <p class="footer-text">
+                Don't have an account? <a href="{% url 'register' %}">Register here</a>
+            </p>
+        </div>
+        <div class="image-section">
+        </div>
+    </div>
+</body>
+</html>

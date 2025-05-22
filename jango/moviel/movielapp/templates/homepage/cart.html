@@ -1,0 +1,83 @@
+{% extends 'homepage/layout.html' %}
+{% load static %}
+{% block title %}Cart Page{% endblock %}
+
+{% block content %}
+<link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet">
+<link rel="stylesheet" href="{% static 'css/cart.css' %}" />
+
+<div class="cart-container">
+    <h1>Your Orders</h1>
+
+    <!-- Filter Buttons -->
+    <div class="filter-buttons">
+        <button class="filter-btn active" data-filter="all" onclick="filterCart(this)">All</button>
+        <button class="filter-btn" data-filter="approved" onclick="filterCart(this)">Approved</button>
+        <button class="filter-btn" data-filter="rejected" onclick="filterCart(this)">Rejected</button>
+    </div>
+
+    {% if cart.requests.all %}
+        <div class="cart-items" id="cart-items">
+            {% for request in cart.requests.all %}
+            <div class="cart-item" data-status="{{ request.status|lower }}">
+                <div class="cart-item-image">
+                    <img src="{{ request.pet.image.url }}" alt="{{ request.pet.name }}" 
+    data-pet-id="{{ request.pet.id }}" 
+    data-availability="{% if request.pet.availability %}1{% else %}0{% endif %}" 
+    onclick="checkAvailability(this)"
+    style="cursor: pointer;" />
+
+                </div>
+                <div class="cart-item-info">
+                    <h3>{{ request.pet.name }} ({{ request.pet.breed }})</h3>
+                    <p>Status: <strong>{{ request.status }}</strong></p>
+            
+                    {% if request.status == 'Approved' %}
+                    <a href="{% url 'download_pdf' request.id %}" class="download-icon" title="Download">
+                        <i class="fas fa-download"></i>
+                    </a>
+                    {% endif %}
+                </div>
+            </div>
+            
+            
+            {% endfor %}
+        </div>
+    {% else %}
+        <p class="empty-cart">Your cart is empty.</p>
+    {% endif %}
+</div>
+
+<script>
+    function filterCart(button) {
+        const filterValue = button.getAttribute('data-filter');
+        const items = document.querySelectorAll('.cart-item');
+        const buttons = document.querySelectorAll('.filter-btn');
+
+        // Update active button styling
+        buttons.forEach(btn => btn.classList.remove('active'));
+        button.classList.add('active');
+
+        // Filter items
+        items.forEach(item => {
+            const itemStatus = item.getAttribute('data-status');
+            if (filterValue === 'all' || filterValue === itemStatus) {
+                item.style.display = 'flex'; // Show matching items
+            } else {
+                item.style.display = 'none'; // Hide non-matching items
+            }
+        });
+    }
+    function checkAvailability(element) {
+    let petId = element.getAttribute("data-pet-id");
+    let availability = parseInt(element.getAttribute("data-availability"), 10);
+
+    if (availability === 1) {
+        window.location.href = `/pet/${petId}/`; // Redirect to pet detail page
+    } else {
+        alert("This pet has already been sold.");
+    }
+}
+
+</script>
+{% endblock %}

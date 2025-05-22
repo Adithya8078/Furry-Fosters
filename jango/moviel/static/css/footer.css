@@ -1,0 +1,147 @@
+/* General Footer Styling */
+html, body {
+    height: 100%;
+    margin: 0;
+    padding: 0;
+    font-family: Arial, sans-serif;
+}
+
+body {
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
+}
+
+/* Main Content Wrapper */
+.content-wrapper {
+    flex: 1 0 auto;
+    width: 100%;
+}
+
+/* Footer Styling */
+.footer {
+    flex-shrink: 0;
+    background-color: #f9f5e2; /* Light beige with a slight yellow tint */
+    color: #333;
+    padding: 10px 0;
+    width: 100%;
+    animation: fadeInUp 1.5s ease-out;
+    position: relative;
+    bottom: 0;
+    left: 0;
+}
+
+
+.footer-container {
+    max-width: 1200px;
+    margin: 0 ;
+    
+}
+
+/* Footer Top Section */
+.footer .footer-top {
+    display: flex;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    margin-bottom: 30px;
+}
+
+.footer-section {
+    flex: 1;
+    min-width: 250px;
+    margin: 10px 20px;
+}
+
+.footer h5 {
+    font-size: 20px;
+    font-weight: 700;
+    margin-bottom: 15px;
+    color: #333;
+    transition: color 0.3s ease;
+}
+
+.footer h5:hover {
+    color: rgb(233, 210, 129); /* Highlighting text */
+}
+
+.footer ul {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+.footer ul li {
+    margin-bottom: 10px;
+}
+
+.footer ul li a {
+    color: #333;
+    text-decoration: none;
+    transition: color 0.3s ease;
+}
+
+.footer ul li a:hover {
+    color: rgb(233, 210, 129);
+}
+
+/* Social Icons */
+.social-icons {
+    display: flex;
+    justify-content: center;
+    gap: 20px;
+}
+
+.social-icons a {
+    color: #333;
+    font-size: 20px;
+    transition: color 0.3s ease;
+}
+
+.social-icons a:hover {
+    color: #FF9F1C; /* Complementary warm color for hover effect */
+}
+
+/* Footer Text Alignments */
+.footer .text-end {
+    text-align: right;
+}
+
+.footer .text-center {
+    text-align: center;
+    margin-top: 20px;
+    padding-top: 20px;
+    border-top: 1px solid rgba(0, 0, 0, 0.1);
+}
+
+/* Responsive Styling for Smaller Screens */
+@media (max-width: 768px) {
+    .footer .footer-top {
+        flex-direction: column;
+        align-items: center;
+        text-align: center;
+    }
+    
+    .footer .text-end {
+        text-align: center;
+    }
+    
+    .footer-section {
+        margin: 20px 0;
+        text-align: center;
+    }
+    .text-end{
+        text-align: center;
+    }
+}
+
+/* Animations */
+@keyframes fadeInUp {
+    0% {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+    100% {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}

@@ -1,0 +1,28 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pending Approval</title>
+    <link rel="stylesheet" href="{% static 'css/pending_approval.css' %}">
+</head>
+<body>
+    <div class="container">
+        <div class="approval-section">
+            <div class="approval-content">
+                <div class="approval-icon">
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="clock-icon">
+                        <circle cx="12" cy="12" r="10"></circle>
+                        <polyline points="12 6 12 12 16 14"></polyline>
+                    </svg>
+                </div>
+                <h1>Registration Successful</h1>
+                <p>Thank you for registering as a foster. Your account is pending admin approval. You will receive an email once your profile is reviewed.</p>
+                <a href="{% url 'login' %}" class="back-button">Back to Login</a>
+            </div>
+        </div>
+        
+    </div>
+</body>
+</html>

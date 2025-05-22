@@ -1,0 +1,11 @@
+<h1>Approve Foster User</h1>
+<p>Are you sure you want to approve the following user?</p>
+<ul>
+    <li>Username: {{ user.username }}</li>
+    <li>Email: {{ user.email }}</li>
+    <li>License Number: {{ user.license_number }}</li>
+</ul>
+<form method="POST">
+    {% csrf_token %}
+    <button type="submit">Approve</button>
+</form>

@@ -1,0 +1,229 @@
+{% load static %}
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Messages</title>
+    <link rel="stylesheet" href="{% static 'css/message.css' %}?v=2">
+    <!-- Include Font Awesome for icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    
+</head>
+<body>
+    <!-- messages/message.html -->
+   
+<div class="messaging-interface">
+    <div class="messages-bar" onclick="toggleExpand()">
+        <h2>Messages</h2>
+        <div class="message-actions">
+            <button class="icon-button">
+                <i class="fas fa-edit"></i>
+            </button>
+            <button class="icon-button" id="expand-button">
+                <i class="fas fa-chevron-up"></i>
+            </button>
+        </div>
+    </div>
+
+    <div class="messages-container" id="messages-container" style="display: none;">
+        <div class="chat-view" id="chat-view" style="display: none;">
+            <div class="chat-header">
+                <button onclick="closeChat()" class="back-button">
+                    <i class="fas fa-arrow-left"></i>
+                </button>
+                <div class="user-info">
+                    <div class="avatar" id="chat-avatar"></div>
+                    <span class="username" id="chat-username"></span>
+                </div>
+            </div>
+            
+            <div class="chat-messages" id="chat-messages"></div>
+            
+            <div class="chat-input">
+                <input type="text" id="message-input" placeholder="Type a message..." class="message-input">
+                <button class="send-button" onclick="sendChatMessage()">Send</button>
+            </div>
+        </div>
+
+        <div class="messages-list" id="messages-list">
+            {% for message in last_messages %}
+            <div class="message-item" data-pet-id="{{ message.pet.id }}" 
+                 onclick="openChat(
+    '{% if user == message.sender %}{{ message.recipient.username }}{% else %}{{ message.sender.username }}{% endif %}', 
+    '{% if user == message.sender %}{{ message.recipient.username|first }}{% else %}{{ message.sender.username|first }}{% endif %}', 
+    '{{ message.pet.id }}', 
+    '{% if user == message.sender %}{{ message.recipient.id }}{% else %}{{ message.sender.id }}{% endif %}'
+                 )">
+                <div class="avatar">
+                    {% if user == message.sender %}
+                    {{ message.recipient.username|first }}
+                            {% else %}
+                            {{ message.sender.username|first }}
+                            {% endif %}
+                    
+                </div>
+                <div class="message-content">
+                    <div class="sender-info">
+                        <span class="username">
+                            {% if user == message.sender %}
+                                {{ message.recipient.username }}
+                            {% else %}
+                                {{ message.sender.username }}
+                            {% endif %}
+                        </span>
+                        <span class="pet-name">(Re: {{ message.pet.name }})</span>
+                    </div>
+                    <p class="message-text">{{ message.content }}</p>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+</div>
+
+    <script>
+        const currentUserId = '{{ request.user.id }}';
+let currentPetId = null;
+let currentRecipientId = null;
+
+function toggleExpand() {
+    const container = document.getElementById('messages-container');
+    const button = document.getElementById('expand-button');
+    const isExpanded = container.style.display !== 'none';
+    
+    container.style.display = isExpanded ? 'none' : 'block';
+    button.innerHTML = isExpanded ? 
+        '<i class="fas fa-chevron-up"></i>' : 
+        '<i class="fas fa-chevron-down"></i>';
+}
+
+function openChat(username, avatar, petId, recipientId) {
+    if (!petId) {
+        console.error('Pet ID is missing');
+        return;
+    }
+
+    document.getElementById('messages-list').style.display = 'none';
+    document.getElementById('chat-view').style.display = 'flex';
+    document.getElementById('chat-username').textContent = username;
+    document.getElementById('chat-avatar').textContent = avatar;
+
+    currentPetId = petId;
+    currentRecipientId = recipientId;
+
+    const chatMessages = document.getElementById('chat-messages');
+    chatMessages.innerHTML = ''; // Clear existing messages
+
+    // Ensure the URL is correctly formed
+    fetch(`/fetch-chat/${petId}/${recipientId}/`)
+    .then(response => {
+        if (!response.ok) {
+            throw new Error('Network response was not ok');
+        }
+        return response.json();
+    })
+    .then(data => {
+        if (data.success && data.messages) {
+            const chatMessages = document.getElementById('chat-messages');
+              // Clear existing messages
+
+            data.messages.forEach(message => {
+                const messageDiv = document.createElement('div');
+                messageDiv.className = message.sender === currentUserId ? 
+                    'message-outgoing' : 'message-incoming';
+                messageDiv.innerHTML = `<div class="message-bubble">${message.content}</div>`;
+                chatMessages.appendChild(messageDiv);
+            });
+
+            chatMessages.scrollTop = chatMessages.scrollHeight;
+        }
+    })
+    .catch(error => {
+        console.error('Error fetching chat:', error);
+    });
+
+}
+
+
+function sendChatMessage() {
+    if (!currentPetId || !currentRecipientId) {
+        alert("Pet or recipient information is missing.");
+        return;
+    }
+
+    const input = document.getElementById('message-input');
+    const content = input.value.trim();
+    if (!content) return;
+
+    const chatMessages = document.getElementById('chat-messages');
+    const newMessage = document.createElement('div');
+    newMessage.className = 'message-outgoing';
+    newMessage.innerHTML = `<div class="message-bubble">${content}</div>`;
+    chatMessages.appendChild(newMessage);
+    chatMessages.scrollTop = chatMessages.scrollHeight;
+    input.value = '';
+
+    fetch(`/send-message/${currentPetId}/`, {
+        method: 'POST',
+        headers: {
+            'X-CSRFToken': document.querySelector('[name=csrfmiddlewaretoken]').value,
+            'Content-Type': 'application/x-www-form-urlencoded',
+        },
+        body: `content=${encodeURIComponent(content)}&recipient_id=${currentRecipientId}`
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            // After successfully sending, re-fetch the chat messages
+            fetch(`/fetch-chat/${currentPetId}/${currentRecipientId}/`)
+    .then(response => {
+        console.log(response); // Log the response to verify its structure
+        if (!response.ok) {
+            throw new Error('Network response was not ok');
+        }
+        return response.json();
+    })
+    .then(data => {
+        console.log(data); // Log the data for further debugging
+        if (data.success && data.messages) {
+            const chatMessages = document.getElementById('chat-messages');
+            chatMessages.innerHTML = '';  // Clear existing messages
+            data.messages.forEach(message => {
+                const messageDiv = document.createElement('div');
+                messageDiv.className = message.sender === currentUserId ? 
+                    'message-outgoing' : 'message-incoming';
+                messageDiv.innerHTML = `<div class="message-bubble">${message.content}</div>`;
+                chatMessages.appendChild(messageDiv);
+            });
+
+            chatMessages.scrollTop = chatMessages.scrollHeight;
+        }
+    })
+    .catch(error => {
+        console.error('Error fetching chat:', error);
+    });
+        } else {
+            chatMessages.removeChild(newMessage);
+            alert('Failed to send message');
+        }
+    })
+    .catch(error => {
+        chatMessages.removeChild(newMessage);
+        console.error('Error:', error);
+    });
+}
+
+function closeChat() {
+    document.getElementById('chat-view').style.display = 'none';
+    document.getElementById('messages-list').style.display = 'block';
+}
+
+// Add event listener for Enter key
+document.getElementById('message-input').addEventListener('keypress', function(e) {
+    if (e.key === 'Enter') {
+        e.preventDefault();
+        sendChatMessage();
+    }
+});
+    </script>
+</body>
+</html>

@@ -1,0 +1,31 @@
+{% extends "homepage/layout.html" %}
+{% load static %}
+{% block content %}
+<link rel="stylesheet" href="{% static 'css/adopter_details.css' %}?v=2">
+
+<h2 class="header1">Pets Available by {{ foster.username }}</h2>
+<table>
+    <thead>
+        <tr>
+            <th>Pet ID</th>
+            <th>Name</th>
+            <th>Breed</th>
+            <th>Category</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for pet in available_pets %}
+        <tr>
+            <td>{{ forloop.counter }}</td>
+            <td>{{ pet.name }}</td>
+            <td>{{ pet.breed }}</td>
+            <td>{{ pet.category }}</td>
+        </tr>
+        {% empty %}
+        <tr>
+            <td colspan="4">No available pets found.</td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+{% endblock %}

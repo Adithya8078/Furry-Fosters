@@ -1,0 +1,46 @@
+{% extends "homepage/layout.html" %}
+{% load static %}
+{% block content %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{ animal|capfirst }} Category</title>
+    <link rel="stylesheet" href="{% static 'css/category.css' %}?v=1">
+</head>
+<body>
+    <header>
+        <h1>Welcome to the {{ animal|capfirst }} Category</h1>
+        <p>Explore all about {{ animal }}s here!</p>
+    </header>
+
+    <div class="pet-grid">
+        {% if pets %}
+            {% for pet in pets %}
+                {% if pet.availability %}
+                    <div class="pet-card">
+                        <a href="{% url 'pet_detail' pet.id %}">
+                        <div class="pet-image-container">
+                            <img src="{{ pet.image.url }}" alt="{{ pet.name }}">
+                        </div>
+                        <div class="pet-info">
+                            <h3>{{ pet.name }}</h3>
+                            <p class="pet-category">{{ pet.category }}</p>
+                            <p class="pet-age">Age: {{ pet.age }} years</p>
+                            <p class="pet-breed">Breed: {{ pet.breed }}</p>
+                            <p class="pet-location">Location: {{ pet.location }}</p>
+                            <p class="pet-health-status">{{ pet.health_status }}</p>
+                            <p class="pet-price">Price: ₹{{ pet.price }}</p>
+                        </div>
+                    </a>
+                    </div>
+                {% endif %}
+            {% endfor %}
+        {% else %}
+            <p>No pets available at the moment.</p>
+        {% endif %}
+    </div>
+</body>
+</html>
+{% endblock %}

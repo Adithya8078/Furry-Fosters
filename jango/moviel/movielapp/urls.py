@@ -1,0 +1,33 @@
+from django.urls import path
+from . import views
+from django.contrib.auth import views as auth_views
+urlpatterns = [
+    path('', views.role_based_redirect, name='role_based_redirect'),
+    path('home/', views.house, name='house'),
+    path('foster/<int:user_id>/', views.foster_page, name='foster_page'),
+    path('home/', views.house, name='adopter_page'),
+    path('custom-admin/<int:user_id>/', views.admin_page, name='admin_page'),
+    path('add_pet/', views.add_pet, name='add_pet'),
+    path('edit-user/<int:user_id>/', views.edit_user, name='edit_user'),
+    path('delete-user/<int:user_id>/', views.delete_user, name='delete_user'),
+    path('edit-pet/<int:pet_id>/', views.edit_pet, name='edit_pet'),
+    path('delete-pet/<int:pet_id>/', views.delete_pet, name='delete_pet'),
+    path('about/', views.about, name='about'),
+    path('category/<str:category>/', views.category_view, name='category'),
+    path('pet/<int:pet_id>/', views.pet_detail, name='pet_detail'),
+    path('pets/',views.pets,name="pets"),
+    path('contact-request/<int:pet_id>/', views.create_contact_request, name='create_contact_request'),
+    path('update-request-status/<int:request_id>/', views.update_request_status, name='update_request_status'),
+    path('cart/', views.cart, name='cart'),
+    path('adopter/<int:user_id>/', views.adopter_details_view, name='adopter_details'),
+    path('foster-details/<int:user_id>/', views.foster_details_view, name='foster_details'),
+    path('fetch-chat/<int:pet_id>/<int:recipient_id>/', views.fetch_chat, name='fetch_chat'),
+    path('download-pdf/<int:request_id>/', views.download_pdf, name='download_pdf'),
+    path('send-message/<int:pet_id>/', views.send_message, name='send_message'),
+    path('messages/', views.messages_view, name='messages_view'),
+    path('update_pet/<int:pet_id>/', views.update_pet, name='update_pet'),
+    path('delete_pet/<int:pet_id>/', views.delete_pet, name='delete_pet'),
+    path('profile/', views.profile_view, name='profile'),    
+    path('generate-payment-qr/', views.generate_payment_qr, name='generate_payment_qr'),
+    path('validate-payment/<str:payment_id>/', views.validate_payment, name='validate_payment'),
+]

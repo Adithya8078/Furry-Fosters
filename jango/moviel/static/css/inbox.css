@@ -1,0 +1,60 @@
+.messages-container {
+    max-width: 800px;
+    margin: 0 auto;
+}
+
+.message-card {
+    background: white;
+    border: 1px solid #e5e7eb;
+    border-radius: 8px;
+    padding: 16px;
+    margin-bottom: 16px;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+}
+
+.message-card.unread {
+    border-left: 4px solid #FCD34D;
+    background-color: #FEFCE8;
+}
+
+.message-header {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 8px;
+    color: #666;
+    font-size: 0.9rem;
+}
+
+.message-pet {
+    font-weight: 600;
+    color: #333;
+    margin-bottom: 8px;
+}
+
+.message-content {
+    color: #4B5563;
+    line-height: 1.5;
+}
+
+.tabs {
+    display: flex;
+    gap: 16px;
+    border-bottom: 1px solid #e5e7eb;
+}
+
+.tab-btn {
+    padding: 8px 16px;
+    border: none;
+    background: none;
+    cursor: pointer;
+    color: #666;
+}
+
+.tab-btn.active {
+    color: #000;
+    border-bottom: 2px solid #FCD34D;
+}
+
+.hidden {
+    display: none;
+}

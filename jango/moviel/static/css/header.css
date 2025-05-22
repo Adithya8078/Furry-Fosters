@@ -1,0 +1,117 @@
+/* General Header Styling */
+.header {
+  background-color: white; /* Ensures a white background */
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 15px 35px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); /* Subtle shadow for better separation */
+  position: fixed;
+  width: 100%;
+  top: 0;
+  z-index: 1000;
+  font-family: Arial, sans-serif; /* Clean font */
+  height: 80px; /* Set a fixed height for the header */
+}
+
+/* Logo Styling */
+.logo {
+  font-size: 28px;
+  font-weight: bold;
+  text-decoration: none;
+  color: black;
+}
+
+.logo .logo-highlight {
+  color: #FF9F1C; /* Adds orange highlight for part of the logo text */
+}
+
+/* Navigation Links */
+.header-right a {
+  margin-left: 10px;
+  text-decoration: none;
+  color: black;
+  font-size: 16px;
+  font-weight: 500;
+  transition: color 0.3s ease-in-out;
+}
+
+.header-right a:hover {
+  color: #FF9F1C; /* Orange on hover */
+}
+
+/* Dropdown Styling */
+.dropdown {
+  position: relative;
+  display: inline-block;
+}
+
+.dropbtn {
+
+  background-color: transparent;
+  color: black;
+  padding: 8px 8px;
+  border: none;
+  cursor: pointer;
+  font-size: 16px;
+  font-weight: 500;
+}
+
+.dropdown-content {
+  
+  display: none;
+  position: absolute;
+  background-color: white;
+  min-width: 120px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); /* Subtle dropdown shadow */
+  border-radius: 4px;
+  z-index: 1;
+  overflow: hidden;
+}
+
+.dropdown-content a {
+  color: black;
+  padding: 15px 15px;
+  text-decoration: none;
+  display: block;
+  font-size: 14px;
+  transition: background-color 0.3s ease-in-out;
+}
+
+.dropdown:hover .dropdown-content {
+  display: block;
+}
+
+.dropdown-content a:hover {
+  background-color: white; /* Orange background on hover */
+  color: rgb(248, 130, 20);
+}
+
+/* Responsive Styling */
+@media screen and (max-width: 768px) {
+  .header {
+      flex-direction: column;
+      align-items: center;
+      padding: 10px;
+      height: auto; /* Remove fixed height on smaller screens */
+  }
+  .header-right {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      gap: 10px;
+  }
+  .header-right a {
+      margin: 5px;
+  }
+}
+.cart-icon {
+  font-size: 24px;
+  color: #333;
+  margin-left: 20px;
+  text-decoration: none;
+}
+
+.cart-icon:hover {
+  color: #f39c12; /* Change color when hovered */
+}

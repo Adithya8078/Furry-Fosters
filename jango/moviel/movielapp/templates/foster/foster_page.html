@@ -1,0 +1,243 @@
+{% extends "homepage/layout.html" %}
+{% load static %}
+{% block content %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Foster Page</title>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <link rel="stylesheet" href="{% static 'css/foster_page.css' %}?v=2" />
+</head>
+<body>
+    <div class="container">
+        {% include "messages/message.html" %}
+        <!-- Add Pet Button -->
+        <div class="top-bar">
+            <h2>Your Pets</h2>
+            <button id="addPetButton">Add Pet</button>
+        </div>
+
+        <!-- Pets Section -->
+        <div class="pet-grid">
+            {% if pets %}
+                {% for pet in pets %}
+                    {% if pet.availability %}
+                    <div class="pet-card">
+                        <div class="pet-image-container">
+                            <img src="{{ pet.image.url }}" alt="{{ pet.name }}">
+                        </div>
+                        <div class="pet-info">
+                            <h3>{{ pet.name }}</h3>
+                            <p class="pet-category">{{ pet.category }}</p>
+                            <p class="pet-age">Age: {{ pet.age }} years</p>
+                            <p class="pet-breed">Breed: {{ pet.breed }}</p>
+                            <p class="pet-health-status">{{ pet.health_status }}</p>
+                        </div>
+                        
+                        <!-- Buttons (Hidden by default, shown on hover) -->
+                        <div class="edit-delete-buttons">
+                            <button class="editPetButton" data-pet-id="{{ pet.id }}" 
+                                    data-name="{{ pet.name }}" data-category="{{ pet.category }}" 
+                                    data-age="{{ pet.age }}" data-breed="{{ pet.breed }}" 
+                                    data-health="{{ pet.health_status }}">
+                                Edit
+                            </button>
+                            <form method="post" action="{% url 'delete_pet' pet.id %}">
+                                {% csrf_token %}
+                                <button type="submit" class="deletePetButton">Delete</button>
+                            </form>
+                        </div>
+                    </div>
+                    
+                    {% endif %}
+                {% endfor %}
+            {% else %}
+                <p>No pets available at the moment.</p>
+            {% endif %}
+        </div>
+
+        <!-- Pending Requests Section -->
+        <h2>Pending Approvals</h2>
+        {% if requests %}
+            <div class="table-responsive">
+                <table class="table table-striped">
+                    <thead>
+                        <tr>
+                            <th>Pet Name</th>
+                            <th>Requested By</th>
+                            <th>Adoption Intent</th>
+                            <th>Pet Experience</th>
+                            <th>Home Environment</th>
+                            <th>Status</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for request in requests %}
+                            <tr>
+                                <td>{{ request.pet.name }} ({{ request.pet.breed }})</td>
+                                <td>
+                                    <strong>Name:</strong> {{ request.user.username }}<br>
+                                    <strong>Email:</strong> {{ request.user.email }}
+                                </td>
+                                <td>{{ request.intent }}</td>
+                                <td>{{ request.experience }}</td>
+                                <td>{{ request.home_environment }}</td>
+                                <td>{{ request.status }}</td>
+                                <td>
+                                    <form method="post" action="{% url 'update_request_status' request.id %}">
+                                        {% csrf_token %}
+                                        <button type="submit" name="status" value="Approved" class="btn btn-success btn-sm">Approve</button>
+                                        <button type="submit" name="status" value="Rejected" class="btn btn-danger btn-sm">Reject</button>
+                                    </form>
+                                </td>
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        {% else %}
+            <p>No pending requests.</p>
+        {% endif %}
+</div>
+
+    <!-- Form Container -->
+    <div class="overlay"></div>
+    <div id="formContainer">
+        <h2>Add Pet</h2>
+        <form id="addPetForm" method="post" enctype="multipart/form-data">
+            {% csrf_token %}
+            <div class="form-scroll">
+                {{ form }}
+            </div>
+            <button type="submit">Submit</button>
+        </form>
+    </div>
+
+    <!-- JavaScript for Form and AJAX Handling -->
+    <script>
+      $(document).ready(function () {
+    const formContainer = $('#formContainer');
+    const overlay = $('.overlay');
+    const addPetForm = $('#addPetForm');
+
+    // Show add pet form
+    $('#addPetButton').click(function () {
+        formContainer.show();
+        overlay.show();
+        addPetForm.trigger("reset"); // Clear form for new pet
+        addPetForm.attr("action", "{% url 'add_pet' %}"); // Reset action URL
+    });
+
+    // Show edit form with existing pet details
+    $('.editPetButton').click(function () {
+        formContainer.show();
+        overlay.show();
+
+        // Fill form with pet data
+        const petId = $(this).data('pet-id');
+        $('input[name="name"]').val($(this).data('name'));
+        $('input[name="category"]').val($(this).data('category'));
+        $('input[name="age"]').val($(this).data('age'));
+        $('input[name="breed"]').val($(this).data('breed'));
+        $('input[name="health_status"]').val($(this).data('health'));
+        
+        // Change form action to update pet
+        addPetForm.attr("action", `/update_pet/${petId}/`);
+    });
+
+    // Hide form when clicking outside
+    overlay.click(function () {
+        formContainer.hide();
+        overlay.hide();
+    });
+
+    // Handle form submission with AJAX (Add & Edit Pet)
+    addPetForm.on('submit', function (e) {
+        e.preventDefault(); // Prevent default form submission
+        const formData = new FormData(this);
+        const actionUrl = addPetForm.attr("action");
+
+        $.ajax({
+            url: actionUrl,
+            type: "POST",
+            data: formData,
+            processData: false,
+            contentType: false,
+            success: function (response) {
+                if (response.success) {
+                    alert('Pet saved successfully!');
+                    location.reload();
+                } else {
+                    alert('Failed to save pet. Please try again.');
+                }
+            },
+            error: function () {
+                alert('An error occurred. Please try again.');
+            }
+        });
+    });
+
+    // Handle delete pet request
+    $('.deletePetButton').click(function (e) {
+    e.preventDefault();
+    if (!confirm("Are you sure you want to delete this pet?")) return;
+
+    const form = $(this).closest("form");
+    const actionUrl = form.attr("action");
+    const csrfToken = $("input[name='csrfmiddlewaretoken']").val();
+
+    $.ajax({
+        url: actionUrl,
+        type: "POST",
+        data: { csrfmiddlewaretoken: csrfToken },
+        dataType: "json", // Ensure response is treated as JSON
+        success: function (response) {
+            if (response.success) {
+                alert(response.message);
+                location.reload();
+            } else {
+                alert('Failed: ' + response.message);
+            }
+        },
+        error: function (xhr, status, error) {
+            alert('An error occurred: ' + xhr.responseText);
+        }
+    });
+});
+
+    // Handle approval/rejection of adoption requests
+    $(document).on('submit', 'form', function (e) {
+        if ($(this).is('#addPetForm')) return; // Skip add/edit form
+        e.preventDefault();
+
+        const form = $(this);
+        const actionUrl = form.attr('action');
+        const status = form.find('button[type="submit"]:focus').val();
+        const csrfToken = $("input[name='csrfmiddlewaretoken']").val();
+
+        $.ajax({
+            url: actionUrl,
+            type: "POST",
+            data: { status: status, csrfmiddlewaretoken: csrfToken },
+            success: function (response) {
+                if (response.success) {
+                    alert(response.message);
+                    location.reload();
+                } else {
+                    alert('Failed: ' + response.message);
+                }
+            },
+            error: function () {
+                alert('An error occurred. Please try again.');
+            }
+        });
+    });
+});
+
+    </script>
+</body>
+</html>
+{% endblock %}

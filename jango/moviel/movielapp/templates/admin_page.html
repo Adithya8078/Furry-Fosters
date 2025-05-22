@@ -1,0 +1,121 @@
+{% extends "homepage/layout.html" %}
+{% load static %}
+{% block content %}
+    <link rel="stylesheet" href="{% static 'css/admin_page.css' %}"/>
+    
+   
+    <div class="admin-container">
+        <title>Admin Dashboard</title>
+        <div class="admin-header">
+            <h1>Admin Dashboard</h1>
+            <!-- Filter Buttons -->
+            <div class="filter-buttons">
+                <button class="filter-btn active" data-filter="adopters" onclick="filterSection(this)">Manage Adopters</button>
+                <button class="filter-btn" data-filter="fosters" onclick="filterSection(this)">Manage Fosters</button>
+            </div>
+        </div>
+
+        <!-- Section: Manage Adopters -->
+        <div class="section active" id="adopters-section">
+            <h2>Manage Adopters</h2>
+            <table>
+                <thead>
+                    <tr>
+                        <th>User ID</th>
+                        <th>Username</th>
+                        <th>Email</th>
+                        <th>Role</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for user in users %}
+                    {% if user.role != 'admin' and user.role != 'foster' %}
+                    <tr>
+                        <td>{{ forloop.counter }}</td>
+                        <td>
+                            <a href="{% url 'adopter_details' user.id %}">{{ user.username }}</a>
+                        </td>
+                        <td>{{ user.email }}</td>
+                        <td>{{ user.role }}</td>
+                        <td>
+                            <a href="{% url 'delete_user' user.id %}" class="btn btn-danger">Delete</a>
+                        </td>
+                    </tr>
+                    {% endif %}
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+
+        <!-- Section: Manage Fosters -->
+        <div class="section" id="fosters-section">
+            <h2>Manage Fosters</h2>
+            <table>
+                <thead>
+                    <tr>
+                        <th>User ID</th>
+                        <th>Username</th>
+                        <th>Email</th>
+                        <th>Role</th>
+                        <th>License Number</th>
+                        <th>Actions</th>
+                        <th>Approval Status</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for user in users %}
+                    {% if user.role == 'foster' %}
+                    <tr>
+                        <td>{{ forloop.counter }}</td>
+                        <td>
+                            <a href="{% url 'foster_details' user.id %}">{{ user.username }}</a>
+                        </td>
+                        <td>{{ user.email }}</td>
+                        <td>{{ user.role }}</td>
+                        <td>{{ user.license_number }}</td>
+                        <td>
+                            {% if not user.is_active %}
+                            <form action="{% url 'approve_foster_view' user.id %}" method="post" style="display: inline;">
+                                {% csrf_token %}
+                                <button type="submit" name="action" value="approve" class="btn btn-success">Approve</button>
+                                <button type="submit" name="action" value="reject" class="btn btn-danger">Reject</button>
+                            </form>
+                            {% else %}
+                            <a href="{% url 'delete_user' user.id %}" class="btn btn-danger">Delete</a>
+                            {% endif %}
+                        </td>
+                        <td>
+                            {% if user.is_active %}
+                            Approved
+                            {% else %}
+                            Pending
+                            {% endif %}
+                        </td>
+                    </tr>
+                    {% endif %}
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <script>
+        function filterSection(button) {
+            // Get all sections and buttons
+            const sections = document.querySelectorAll('.section');
+            const buttons = document.querySelectorAll('.filter-btn');
+            const filterValue = button.getAttribute('data-filter');
+            
+            // Remove active class from all buttons and sections
+            buttons.forEach(btn => btn.classList.remove('active'));
+            sections.forEach(section => section.classList.remove('active'));
+            
+            // Add active class to clicked button
+            button.classList.add('active');
+            
+            // Show selected section
+            document.getElementById(`${filterValue}-section`).classList.add('active');
+        }
+    </script>
+{% endblock %}
